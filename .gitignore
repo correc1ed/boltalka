@@ -1,0 +1,69 @@
+# .NET и Visual Studio
+bin
+obj
+packages
+.user
+.suo
+.cache
+.pidb
+.psess
+.vsp
+.vspx
+.sln.docstates
+.vs
+.vs
+
+# Rider  JetBrains (папка .idea в корне)
+.idea
+
+# Файлы сборки и публикации
+.nupkg
+.snupkg
+publish
+artifacts
+
+# Файлы локальной конфигурации
+appsettings.Development.json
+appsettings.Local.json
+launchSettings.json
+
+# Тесты и покрытие
+TestResults
+.coverage
+.coveragexml
+.trx
+.CoverageResult
+
+# Логи
+.log
+.logs
+.htaccess
+.htpasswd
+
+# Временные файлы
+~
+.tmp
+.temp
+.swap
+.bak
+.orig
+
+# Docker (исключая сам .dockerignore)
+.dockerignore
+docker-compose.override.yml
+docker-compose.vs.debug.yml
+docker-compose.vs.release.yml
+
+# Текстовые файлы (но исключить ReadMe.txt)
+.txt
+!ReadMe.txt
+
+# Файлы среды
+.env
+.env.
+!.env.example
+
+# Системные файлы
+Thumbs.db
+.DS_Store
+Desktop.ini

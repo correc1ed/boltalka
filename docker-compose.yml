@@ -1,0 +1,26 @@
+﻿version: "3.8"
+services:
+  boltalka-api:
+    image: boltalka-api:dev
+    build:
+      context: ./boltalka.WebApi
+      dockerfile: Dockerfile
+      target: development          # <-- собираем стадию development
+    container_name: boltalka-api
+    ports:
+      - "5277:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      # Монтируем локальные исходники в /src (где работает dotnet watch)
+      - ./boltalka.WebApi:/src
+      # Анонимные тома – чтобы bin и obj жили только внутри контейнера
+      # и не затирались/не синхронизировались с хостом (ускоряет сборку)
+      - /src/bin
+      - /src/obj
+      # Кэш NuGet-пакетов, чтобы не качать их каждый раз
+      - nuget_cache:/root/.nuget/packages
+    restart: unless-stopped
+
+volumes:
+  nuget_cache:
