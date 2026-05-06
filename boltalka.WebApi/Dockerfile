@@ -1,29 +1,26 @@
-﻿# ============================================
-# Стадия разработки (hot‑reload через dotnet watch)
-# ============================================
+﻿# Стадия разработки (hot-reload)
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS development
 WORKDIR /src
 
-# Сначала копируем только csproj и восстанавливаем пакеты (кэшируется)
-COPY ["boltalka.WebApi.csproj", "./"]
-RUN dotnet restore "boltalka.WebApi.csproj"
+# Копируем csproj всех проектов, сохраняя структуру папок
+COPY boltalka.WebApi/boltalka.WebApi.csproj boltalka.WebApi/
+COPY boltalka.Application/boltalka.Application.csproj boltalka.Application/
+# добавьте остальные проекты, если есть
 
-# Точка входа – dotnet watch с авто-пересборкой при изменениях
-ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:80"]
+RUN dotnet restore boltalka.WebApi/boltalka.WebApi.csproj
 
-# ============================================
-# Стадия production‑сборки (оставляем как есть)
-# ============================================
+# Явно указываем проект, который нужно запускать через dotnet watch
+ENTRYPOINT ["dotnet", "watch", "run", "--project", "boltalka.WebApi/boltalka.WebApi.csproj", "--urls", "http://0.0.0.0:80"]
+
+# Стадия production-сборки — без изменений
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["boltalka.WebApi.csproj", "./"]
-RUN dotnet restore "boltalka.WebApi.csproj"
+COPY boltalka.WebApi/boltalka.WebApi.csproj boltalka.WebApi/
+COPY boltalka.Application/boltalka.Application.csproj boltalka.Application/
+RUN dotnet restore boltalka.WebApi/boltalka.WebApi.csproj
 COPY . .
-RUN dotnet publish "boltalka.WebApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish boltalka.WebApi/boltalka.WebApi.csproj -c Release -o /app/publish /p:UseAppHost=false
 
-# ============================================
-# Финальный production‑образ
-# ============================================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 EXPOSE 80
