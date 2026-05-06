@@ -14,4 +14,8 @@
       <Folder Include="UseCases\Services\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\boltalka.Infrastructure\boltalka.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

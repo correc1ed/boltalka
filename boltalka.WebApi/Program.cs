@@ -1,4 +1,6 @@
 using System.Reflection;
+using boltalka.Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,13 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
+builder.Services.AddDbContext<ServiceDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        x =>
+            x.MigrationsAssembly("boltalka.Infrastructure")
+                .MigrationsHistoryTable("__MigrationsHistory", "boltalka")
+                .EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null)));
 
 var app = builder.Build();
 
