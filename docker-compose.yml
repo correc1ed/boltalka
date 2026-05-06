@@ -1,26 +1,50 @@
-﻿version: "3.8"
-services:
+﻿services:
   boltalka-api:
     image: boltalka-api:dev
     build:
-      context: ./boltalka.WebApi
-      dockerfile: Dockerfile
-      target: development          # <-- собираем стадию development
+      context: .                      # <-- КОРЕНЬ РЕШЕНИЯ, где лежат все проекты
+      dockerfile: boltalka.WebApi/Dockerfile
+      target: development
     container_name: boltalka-api
     ports:
-      - "5277:80"
+      - "5266:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=boltalka-db;Port=5432;Database=boltalkaDb;Username=postgres;Password=masterkey
     volumes:
-      # Монтируем локальные исходники в /src (где работает dotnet watch)
-      - ./boltalka.WebApi:/src
-      # Анонимные тома – чтобы bin и obj жили только внутри контейнера
-      # и не затирались/не синхронизировались с хостом (ускоряет сборку)
-      - /src/bin
-      - /src/obj
-      # Кэш NuGet-пакетов, чтобы не качать их каждый раз
+      # Монтируем ВСЁ РЕШЕНИЕ в /src, чтобы были доступны все проекты
+      - .:/src
+      # Анонимные тома для bin/obj каждого проекта, чтобы не затирать их с хоста
+      - /src/boltalka.WebApi/bin
+      - /src/boltalka.WebApi/obj
+      - /src/boltalka.Application/bin
+      - /src/boltalka.Application/obj
+      # Кеш NuGet-пакетов
       - nuget_cache:/root/.nuget/packages
+    depends_on:
+      boltalka-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  boltalka-db:
+    image: postgres:17
+    container_name: boltalka-postgres
+    environment:
+      POSTGRES_DB: boltalkaDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: masterkey
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Docker/Db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d boltalkaDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:
   nuget_cache:
+  postgres_data:
