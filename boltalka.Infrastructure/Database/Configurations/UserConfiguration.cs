@@ -29,7 +29,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         // Связь с членством в чатах: при удалении пользователя удаляем его членства
         builder.HasMany(u => u.ChatMembers)
-            .WithOne(cm => cm.UserEntity)
+            .WithOne(cm => cm.User)
             .HasForeignKey(cm => cm.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         

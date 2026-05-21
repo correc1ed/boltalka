@@ -14,13 +14,13 @@ public class MessageMediaConfiguration : IEntityTypeConfiguration<MessageMediaEn
         builder.HasKey(mm => new { mm.MessageId, mm.MediaId });
 
         // Связь с сообщением: при удалении сообщения удаляем связь
-        builder.HasOne(mm => mm.MessageEntity)
+        builder.HasOne(mm => mm.Message)
             .WithMany(m => m.MessageMediaLinks)
             .HasForeignKey(mm => mm.MessageId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Связь с медиа: при удалении медиа не удаляем сообщение, только связь (Restrict)
-        builder.HasOne(mm => mm.MediaEntity)
+        builder.HasOne(mm => mm.Media)
             .WithMany()
             .HasForeignKey(mm => mm.MediaId)
             .OnDelete(DeleteBehavior.Restrict);

@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\boltalka.Application\boltalka.Application.csproj" />
+      <ProjectReference Include="..\boltalka.Infrastructure\boltalka.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

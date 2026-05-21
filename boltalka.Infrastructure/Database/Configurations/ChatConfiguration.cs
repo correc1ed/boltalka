@@ -17,18 +17,18 @@ public class ChatConfiguration : IEntityTypeConfiguration<ChatEntity>
 
         // При удалении чата удаляем все его сообщения и звонки (Cascade)
         builder.HasMany(c => c.Messages)
-            .WithOne(m => m.ChatEntity)
+            .WithOne(m => m.Chat)
             .HasForeignKey(m => m.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.Calls)
-            .WithOne(call => call.ChatEntity)
+            .WithOne(call => call.Chat)
             .HasForeignKey(call => call.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // При удалении чата удаляем все записи о членстве
         builder.HasMany(c => c.Members)
-            .WithOne(cm => cm.ChatEntity)
+            .WithOne(cm => cm.Chat)
             .HasForeignKey(cm => cm.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
     }

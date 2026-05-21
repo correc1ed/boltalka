@@ -1,13 +1,9 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
-namespace boltalka.Infrastructure.Database.Entities;
+namespace boltalka.Application.Models.MessageMedia;
 
 /// <summary>
 /// Связь many-to-many: сообщение может иметь несколько вложенных файлов.
 /// </summary>
-[PrimaryKey(nameof(MessageId), nameof(MediaId))]
-public class MessageMediaEntity
+public class MessageMedia
 {
     /// <summary>
     /// Идентификатор сообщения.
@@ -25,12 +21,10 @@ public class MessageMediaEntity
     /// <summary>
     /// Сообщение.
     /// </summary>
-    [ForeignKey(nameof(MessageId))]
-    public MessageEntity Message { get; set; } = null!;
+    public Message.Message Message { get; set; } = null!;
 
     /// <summary>
     /// Медиа.
     /// </summary>
-    [ForeignKey(nameof(MediaId))]
-    public MediaEntity Media { get; set; } = null!;
+    public Media.Media Media { get; set; } = null!;
 }

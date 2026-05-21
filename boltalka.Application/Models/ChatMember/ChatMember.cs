@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using boltalka.Infrastructure.Database.Enum;
-using Microsoft.EntityFrameworkCore;
+using boltalka.Application.Enums.ChatMember;
 
-namespace boltalka.Infrastructure.Database.Entities;
+namespace boltalka.Application.Models.ChatMember;
 
 /// <summary>
 /// Связь "участник чата" (many-to-many между User и Chat).
 /// </summary>
-[PrimaryKey(nameof(UserId), nameof(ChatId))]
-public class ChatMemberEntity
+public class ChatMember
 {
     /// <summary>
     /// Идентификатор пользователя.
@@ -24,7 +20,6 @@ public class ChatMemberEntity
     /// <summary>
     /// Роль участника в чате (Member или Admin).
     /// </summary>
-    [Required]
     public MemberRole Role { get; set; }
 
     /// <summary>
@@ -35,12 +30,10 @@ public class ChatMemberEntity
     /// <summary>
     /// Навигационное свойство: пользователь.
     /// </summary>
-    [ForeignKey(nameof(UserId))]
-    public UserEntity User { get; set; } = null!;
+    public User.User User { get; set; } = null!;
 
     /// <summary>
     /// Навигационное свойство: чат.
     /// </summary>
-    [ForeignKey(nameof(ChatId))]
-    public ChatEntity Chat { get; set; } = null!;
+    public Chat.Chat Chat { get; set; } = null!;
 }

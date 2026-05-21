@@ -1,19 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using boltalka.Infrastructure.Database.Enum;
-using Microsoft.EntityFrameworkCore;
+using boltalka.Application.Enums.Call;
 
-namespace boltalka.Infrastructure.Database.Entities;
+namespace boltalka.Application.Models.Call;
 
 /// <summary>
 /// Звонок (аудио или видео) в рамках чата.
 /// </summary>
-public class CallEntity
+public class Call
 {
     /// <summary>
     /// Уникальный идентификатор звонка.
     /// </summary>
-    [Key]
     public Guid Id { get; set; }
 
     /// <summary>
@@ -39,24 +35,20 @@ public class CallEntity
     /// <summary>
     /// Текущий статус звонка (Pending, Active, Ended, Missed).
     /// </summary>
-    [Required]
     public CallStatus Status { get; set; }
 
     /// <summary>
     /// Тип звонка: аудио или видео.
     /// </summary>
-    [Required]
     public CallType Type { get; set; }
 
     /// <summary>
     /// Навигационное свойство: чат, в котором звонок.
     /// </summary>
-    [ForeignKey(nameof(ChatId))]
-    public ChatEntity Chat { get; set; } = null!;
+    public Chat.Chat Chat { get; set; } = null!;
 
     /// <summary>
     /// Навигационное свойство: инициатор звонка.
     /// </summary>
-    [ForeignKey(nameof(InitiatorId))]
-    public UserEntity Initiator { get; set; } = null!;
+    public User.User Initiator { get; set; } = null!;
 }
