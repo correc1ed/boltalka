@@ -7,12 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Database\Mappers\" />
-      <Folder Include="Database\Repositories\" />
       <Folder Include="Migrations\" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="16.1.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
         <PrivateAssets>all</PrivateAssets>
@@ -24,6 +23,10 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\boltalka.Application\boltalka.Application.csproj" />
     </ItemGroup>
 
 </Project>

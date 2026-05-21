@@ -1,4 +1,5 @@
 using System.Reflection;
+using boltalka.Infrastructure;
 using boltalka.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -28,6 +29,10 @@ builder.Services.AddDbContext<ServiceDbContext>(options =>
             x.MigrationsAssembly("boltalka.Infrastructure")
                 .MigrationsHistoryTable("__MigrationsHistory", "boltalka")
                 .EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null)));
+
+builder.Services
+    .RegisterRepositories()
+    .RegisterMappersEntity();
 
 var app = builder.Build();
 

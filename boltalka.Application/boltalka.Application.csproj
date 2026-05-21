@@ -7,15 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Abstractions\Repositories\" />
       <Folder Include="Abstractions\Services\" />
       <Folder Include="Mappers\" />
-      <Folder Include="Models\" />
       <Folder Include="UseCases\Services\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\boltalka.Infrastructure\boltalka.Infrastructure.csproj" />
+      <PackageReference Include="AutoMapper" Version="16.1.1" />
     </ItemGroup>
 
 </Project>
