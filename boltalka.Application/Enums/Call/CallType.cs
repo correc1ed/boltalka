@@ -1,16 +1,12 @@
 namespace boltalka.Application.Enums.Call;
 
 /// <summary>
-/// Статус звонка.
+/// Тип звонка.
 /// </summary>
 public enum CallType
 {
-    /// <summary>Ожидает ответа.</summary>
-    Pending,
-    /// <summary>Активный разговор.</summary>
-    Active,
-    /// <summary>Завершён.</summary>
-    Ended,
-    /// <summary>Пропущен.</summary>
-    Missed
+    /// <summary>Только аудио.</summary>
+    Audio,
+    /// <summary>Видео и аудио.</summary>
+    Video
 }

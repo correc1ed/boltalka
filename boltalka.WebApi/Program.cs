@@ -1,6 +1,11 @@
 using System.Reflection;
+using boltalka.Application;
+using boltalka.Application.Abstractions.Services;
 using boltalka.Infrastructure;
 using boltalka.Infrastructure.Database;
+using boltalka.Infrastructure.Database.Storage;
+using boltalka.WebApi.Hubs;
+using boltalka.WebApi.UseCases.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
@@ -31,8 +36,16 @@ builder.Services.AddDbContext<ServiceDbContext>(options =>
                 .EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null)));
 
 builder.Services
+    .AddApplication()
+    .AddInfrastructureApplication()
     .RegisterRepositories()
     .RegisterMappersEntity();
+
+// TODO : придумать какой нибудь другой способ интеграции сервиса уведомлений в SignalR.
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddSignalR();
+
+builder.Services.Configure<FileStorageOptions>(builder.Configuration.GetSection("FileStorage"));
 
 var app = builder.Build();
 
@@ -51,5 +64,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.MapGet("/", () => Results.Ok("Messenger API is running..."));
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

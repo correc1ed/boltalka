@@ -1,12 +1,15 @@
 using boltalka.Application.Abstractions.Repositories;
 using boltalka.Infrastructure.Database;
+using boltalka.Infrastructure.Database.Mappers;
 using boltalka.Infrastructure.Database.Mappers.Call;
 using boltalka.Infrastructure.Database.Mappers.Chat;
 using boltalka.Infrastructure.Database.Mappers.ChatMember;
 using boltalka.Infrastructure.Database.Mappers.Media;
 using boltalka.Infrastructure.Database.Mappers.Message;
 using boltalka.Infrastructure.Database.Mappers.MessageMedia;
+using boltalka.Infrastructure.Database.Mappers.RefreshToken;
 using boltalka.Infrastructure.Database.Mappers.User;
+using boltalka.Infrastructure.Database.Profiles;
 using boltalka.Infrastructure.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,7 @@ public static class InfrastructureRegister
         services.AddScoped<IMediaRepository, MediaRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         
         return services;
     }
@@ -34,6 +38,8 @@ public static class InfrastructureRegister
         services.AddAutoMapper(cfg =>
         {
             cfg.AddMaps(
+                typeof(LightMapper).Assembly,
+                
                 typeof(CallFromEntitiesMapper).Assembly,
                 typeof(CallToEntitiesMapper).Assembly,
                 
@@ -52,9 +58,14 @@ public static class InfrastructureRegister
                 typeof(MessageMediaFromEntitiesMapper).Assembly,
                 typeof(MessageMediaToEntitiesMapper).Assembly,
                 
+                typeof(UserFromEntitiesMapper).Assembly,
                 typeof(UserToEntitiesMapper).Assembly,
-                typeof(UserToEntitiesMapper).Assembly
-                        );
+                
+                typeof(RefreshTokenToEntitiesMapper).Assembly,
+                typeof(RefreshTokenFromEntitiesMapper).Assembly,
+                
+                typeof(EntityMappingProfile).Assembly
+                );
         });
         
         return services;

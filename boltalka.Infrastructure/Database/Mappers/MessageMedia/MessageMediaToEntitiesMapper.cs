@@ -13,7 +13,7 @@ public class MessageMediaToEntitiesMapper : MappingProfile
                 MessageId = source.MessageId,
                 MediaId = source.MediaId,
                 SortOrder = source.SortOrder,
-                Message = mapper.Map<MessageEntity>(source.Message),
+                //Message = mapper.Map<MessageEntity>(source.Message),
                 Media = mapper.Map<MediaEntity>(source.Media),
             });
     }

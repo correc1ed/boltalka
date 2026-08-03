@@ -19,7 +19,7 @@ public class MessageToEntitiesMapper : MappingProfile
                 Text = source.Text,
                 AttachmentUrl =  source.AttachmentUrl,
                 Status = (MessageStatus)source.Status,
-                Chat = mapper.Map<ChatEntity>(source.Chat),
+                //Chat = mapper.Map<ChatEntity>(source.Chat),
                 Sender = mapper.Map<UserEntity>(source.Sender),
                 MessageMediaLinks = mapper.Map<ICollection<MessageMediaEntity>>(source.MessageMediaLinks),
             });

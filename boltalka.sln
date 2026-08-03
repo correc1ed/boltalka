@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "boltalka.Application", "bol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "boltalka.Contracts", "boltalka.Contracts\boltalka.Contracts.csproj", "{13783224-ED1A-4B26-B191-EDF24FB50F80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "boltalka.Tests", "boltalka.Tests\boltalka.Tests.csproj", "{B570297F-11A4-4980-8D75-C708CC6ED791}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{13783224-ED1A-4B26-B191-EDF24FB50F80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13783224-ED1A-4B26-B191-EDF24FB50F80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13783224-ED1A-4B26-B191-EDF24FB50F80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B570297F-11A4-4980-8D75-C708CC6ED791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B570297F-11A4-4980-8D75-C708CC6ED791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B570297F-11A4-4980-8D75-C708CC6ED791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B570297F-11A4-4980-8D75-C708CC6ED791}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

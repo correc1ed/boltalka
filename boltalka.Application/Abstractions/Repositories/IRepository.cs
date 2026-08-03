@@ -6,31 +6,36 @@ public interface IRepository<T> where T : class
     /// Получить запись по id.
     /// </summary>
     /// <param name="id">Идентификатор.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Получение записи по id.</returns>
-    Task<T?> GetByIdAsync(Guid id);
+    Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     
     /// <summary>
     /// Получить все записи.
     /// </summary>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Получение всех записей.</returns>
-    Task<IEnumerable<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
     
     /// <summary>
     /// Добавить запись.
     /// </summary>
-    /// <param name="entity">Запись.</param>
+    /// <param name="model">Запись.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Добавление записи.</returns>
-    Task AddAsync(T entity);
+    Task AddAsync(T model, CancellationToken cancellationToken);
     
     /// <summary>
     /// Обновить запись.
     /// </summary>
-    /// <param name="entity">Запись.</param>
-    void Update(T entity);
+    /// <param name="model">Запись.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
+    Task UpdateAsync(T model, CancellationToken cancellationToken);
     
     /// <summary>
     /// Удалить запись.
     /// </summary>
-    /// <param name="entity">Запись.</param>
-    void Delete(T entity);
+    /// <param name="model">Запись.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
+    Task DeleteAsync(T model, CancellationToken cancellationToken);
 }

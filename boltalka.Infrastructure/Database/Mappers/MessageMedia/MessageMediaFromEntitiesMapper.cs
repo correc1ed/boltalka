@@ -12,7 +12,7 @@ public class MessageMediaFromEntitiesMapper : MappingProfile
                 MessageId = source.MessageId,
                 MediaId = source.MediaId,
                 SortOrder = source.SortOrder,
-                Message = mapper.Map<Application.Models.Message.Message>(source.Message),
+                //Message = mapper.Map<Application.Models.Message.Message>(source.Message),
                 Media = mapper.Map<Application.Models.Media.Media>(source.Media),
             });
     }
