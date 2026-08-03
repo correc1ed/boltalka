@@ -20,8 +20,8 @@ public class UserToEntitiesMapper : MappingProfile
                 Avatar = mapper.Map<MediaEntity>(source.Avatar),
                 IsActive = source.IsActive,
                 ChatMembers = mapper.Map<ICollection<ChatMemberEntity>>(source.ChatMembers),
-                Messages = mapper.Map<ICollection<MessageEntity>>(source.Messages),
-                Calls =  mapper.Map<ICollection<CallEntity>>(source.Calls),
+                //Messages = mapper.Map<ICollection<MessageEntity>>(source.Messages),
+                //Calls = mapper.Map<ICollection<CallEntity>>(source.Calls),
             });
     }
 }

@@ -207,6 +207,39 @@ namespace boltalka.Infrastructure.Migrations
                     b.ToTable("MessageMedia", "boltalka");
                 });
 
+            modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.RefreshTokenEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", "boltalka");
+                });
+
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -253,7 +286,7 @@ namespace boltalka.Infrastructure.Migrations
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.CallEntity", b =>
                 {
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "ChatEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "Chat")
                         .WithMany("Calls")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -265,28 +298,28 @@ namespace boltalka.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ChatEntity");
+                    b.Navigation("Chat");
 
                     b.Navigation("Initiator");
                 });
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.ChatMemberEntity", b =>
                 {
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "ChatEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "Chat")
                         .WithMany("Members")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.UserEntity", "UserEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.UserEntity", "User")
                         .WithMany("ChatMembers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ChatEntity");
+                    b.Navigation("Chat");
 
-                    b.Navigation("UserEntity");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.MediaEntity", b =>
@@ -301,7 +334,7 @@ namespace boltalka.Infrastructure.Migrations
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.MessageEntity", b =>
                 {
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "ChatEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.ChatEntity", "Chat")
                         .WithMany("Messages")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -313,28 +346,39 @@ namespace boltalka.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ChatEntity");
+                    b.Navigation("Chat");
 
                     b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.MessageMediaEntity", b =>
                 {
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.MediaEntity", "MediaEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.MediaEntity", "Media")
                         .WithMany()
                         .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("boltalka.Infrastructure.Database.Entities.MessageEntity", "MessageEntity")
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.MessageEntity", "Message")
                         .WithMany("MessageMediaLinks")
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MediaEntity");
+                    b.Navigation("Media");
 
-                    b.Navigation("MessageEntity");
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.RefreshTokenEntity", b =>
+                {
+                    b.HasOne("boltalka.Infrastructure.Database.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("boltalka.Infrastructure.Database.Entities.UserEntity", b =>

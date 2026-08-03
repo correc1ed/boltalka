@@ -9,7 +9,6 @@
 
 ## Быстрый старт
 
-```bash
 # 1. Клонируйте репозиторий
 git clone <repo-url> boltalka
 cd boltalka

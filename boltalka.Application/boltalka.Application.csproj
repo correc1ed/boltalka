@@ -7,13 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Abstractions\Services\" />
-      <Folder Include="Mappers\" />
-      <Folder Include="UseCases\Services\" />
+      <Folder Include="Mappers\Call\" />
+      <Folder Include="Mappers\ChatMember\" />
+      <Folder Include="Mappers\Media\" />
+      <Folder Include="Mappers\MessageMedia\" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="16.1.1" />
+      <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
     </ItemGroup>
 
 </Project>

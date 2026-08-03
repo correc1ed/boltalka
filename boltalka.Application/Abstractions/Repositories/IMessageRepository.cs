@@ -12,21 +12,32 @@ public interface IMessageRepository : IRepository<Message>
     /// <param name="skip">Пропуск элементов.</param>
     /// <param name="take">Выборка элементов.</param>
     /// <param name="before">До/Перед.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Получение сообщений.</returns>
-    Task<IEnumerable<Message>> GetMessagesAsync(Guid chatId, int skip, int take, DateTime? before = null);
+    Task<IEnumerable<Message>> GetMessagesAsync(Guid chatId, int skip, int take, CancellationToken cancellationToken, DateTime? before = null);
     
     /// <summary>
     /// Получить последнее сообщение по id чата.
     /// </summary>
     /// <param name="chatId">Идентификатор чата.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Получение последнего сообщения.</returns>
-    Task<Message?> GetLastMessageAsync(Guid chatId);
+    Task<Message?> GetLastMessageAsync(Guid chatId, CancellationToken cancellationToken);
     
     /// <summary>
     /// Обновить статус сообщения.
     /// </summary>
     /// <param name="messageId">Идентификатор сообщения.</param>
     /// <param name="status">Статус сообщения.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Обновления статуса сообщения.</returns>
-    Task UpdateStatusAsync(Guid messageId, MessageStatus status);
+    Task UpdateStatusAsync(Guid messageId, MessageStatus status, CancellationToken cancellationToken);
+    
+    /// <summary>
+    /// Получить сообщение по id с медиафайлами.
+    /// </summary>
+    /// <param name="messageId">Идентификатор сообщения.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
+    /// <returns>Сообщение с медиафайлами.</returns>
+    Task<Message?> GetMessageWithMediaAsync(Guid messageId, CancellationToken cancellationToken);
 }

@@ -19,9 +19,9 @@ public class UserFromEntitiesMapper : MappingProfile
                 AvatarMediaId  = source.AvatarMediaId,
                 Avatar = mapper.Map<Application.Models.Media.Media>(source.Avatar),
                 IsActive = source.IsActive,
-                ChatMembers = mapper.Map<ICollection<Application.Models.ChatMember.ChatMember>>(source.ChatMembers),
-                Messages = mapper.Map<ICollection<Application.Models.Message.Message>>(source.Messages),
-                Calls =  mapper.Map<ICollection<Application.Models.Call.Call>>(source.Calls),
+                ChatMembers =  mapper.Map<ICollection<Application.Models.ChatMember.ChatMember>>(source.ChatMembers),
+                //Messages = mapper.Map<ICollection<Application.Models.Message.Message>>(source.Messages),
+                //Calls = mapper.Map<ICollection<Application.Models.Call.Call>>(source.Calls),
             });
     }
 }

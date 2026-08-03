@@ -41,6 +41,11 @@ public class ServiceDbContext : DbContext
     /// Пользователи.
     /// </summary>
     public virtual DbSet<UserEntity> Users => Set<UserEntity>();
+    
+    /// <summary>
+    /// Токены.
+    /// </summary>
+    public virtual DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

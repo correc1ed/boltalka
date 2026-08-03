@@ -14,8 +14,8 @@ public class ChatMemberFromEntitiesMapper : MappingProfile
                 ChatId = source.ChatId,
                 Role = (MemberRole)source.Role,
                 JoinedAt = source.JoinedAt,
-                User =  mapper.Map<Application.Models.User.User>(source.User),
-                Chat = mapper.Map<Application.Models.Chat.Chat>(source.Chat),
+                //User =  mapper.Map<Application.Models.User.User>(source.User),
+                //Chat = mapper.Map<Application.Models.Chat.Chat>(source.Chat),
             });
     }
 }

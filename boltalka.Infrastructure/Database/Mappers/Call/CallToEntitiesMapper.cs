@@ -6,7 +6,7 @@ namespace boltalka.Infrastructure.Database.Mappers.Call;
 
 public class CallToEntitiesMapper : MappingProfile
 {
-    CallToEntitiesMapper()
+    public CallToEntitiesMapper()
     {
         CreateMap<Application.Models.Call.Call, Entities.CallEntity>(
             (source, mapper) => new Entities.CallEntity
@@ -18,7 +18,7 @@ public class CallToEntitiesMapper : MappingProfile
                 EndedAt  = source.EndedAt,
                 Type = (CallType)source.Type,
                 Status = (CallStatus)source.Status,
-                Chat = mapper.Map<ChatEntity>(source.Chat),
+                //Chat = mapper.Map<ChatEntity>(source.Chat),
                 Initiator = mapper.Map<UserEntity>(source.Initiator),
             });
     }

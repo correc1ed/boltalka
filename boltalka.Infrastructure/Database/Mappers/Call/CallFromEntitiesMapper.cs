@@ -16,7 +16,7 @@ public class CallFromEntitiesMapper : MappingProfile
             EndedAt  = source.EndedAt,
             Type = (Application.Enums.Call.CallType)source.Type,
             Status = (Application.Enums.Call.CallStatus)source.Status,
-            Chat = mapper.Map<Application.Models.Chat.Chat>(source.Chat),
+            //Chat = mapper.Map<Application.Models.Chat.Chat>(source.Chat),
             Initiator = mapper.Map<Application.Models.User.User>(source.Initiator),
         });
     }
