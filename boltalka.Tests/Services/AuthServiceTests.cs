@@ -1,4 +1,3 @@
-using System.Linq;
 using boltalka.Application.Abstractions.Repositories;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Models.Auth;
@@ -7,7 +6,6 @@ using boltalka.Application.Models.User;
 using boltalka.Application.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
-using boltalka.Infrastructure.Database.Entities;
 using boltalka.Infrastructure.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +39,7 @@ public class AuthServiceTests : TestBase
     {
         var dto = new Register
         {
-            Login = "newuser",
+            Login = "new_user",
             Password = "StrongPass1!",
             DisplayName = "New User"
         };
@@ -49,13 +47,14 @@ public class AuthServiceTests : TestBase
         var result = await _authService.RegisterAsync(dto, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.False(string.IsNullOrEmpty(result.Value.AccessToken));
-        Assert.False(string.IsNullOrEmpty(result.Value.RefreshToken));
+        var tokens = result.Value;
+        Assert.NotNull(tokens);
+        Assert.False(string.IsNullOrEmpty(tokens.AccessToken));
+        Assert.False(string.IsNullOrEmpty(tokens.RefreshToken));
 
-        // Проверяем, что пользователь создан в БД
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Login == "newuser");
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Login == "new_user");
         Assert.NotNull(user);
         Assert.True(BCrypt.Net.BCrypt.Verify("StrongPass1!", user.PasswordHash));
         Assert.True(user.IsActive);
@@ -64,7 +63,6 @@ public class AuthServiceTests : TestBase
     [Fact]
     public async Task Register_ExistingLogin_ReturnsFailure()
     {
-        // Создаём пользователя напрямую
         await _userRepository.AddAsync(new User
         {
             Id = Guid.NewGuid(),
@@ -79,7 +77,9 @@ public class AuthServiceTests : TestBase
         var result = await _authService.RegisterAsync(dto, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("занят", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("занят", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== LoginAsync ====================
@@ -90,19 +90,21 @@ public class AuthServiceTests : TestBase
         await _userRepository.AddAsync(new User
         {
             Id = Guid.NewGuid(),
-            Login = "logintest",
+            Login = "login_test",
             DisplayName = "Test",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("Secret123"),
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         }, CancellationToken.None);
 
-        var creds = new Credentials { Login = "logintest", Password = "Secret123" };
-        var result = await _authService.LoginAsync(creds, CancellationToken.None);
+        var credentials = new Credentials { Login = "login_test", Password = "Secret123" };
+        var result = await _authService.LoginAsync(credentials, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.False(string.IsNullOrEmpty(result.Value.AccessToken));
-        Assert.False(string.IsNullOrEmpty(result.Value.RefreshToken));
+        var tokens = result.Value;
+        Assert.NotNull(tokens);
+        Assert.False(string.IsNullOrEmpty(tokens.AccessToken));
+        Assert.False(string.IsNullOrEmpty(tokens.RefreshToken));
     }
 
     [Fact]
@@ -118,21 +120,25 @@ public class AuthServiceTests : TestBase
             CreatedAt = DateTime.UtcNow
         }, CancellationToken.None);
 
-        var creds = new Credentials { Login = "user", Password = "Wrong" };
-        var result = await _authService.LoginAsync(creds, CancellationToken.None);
+        var credentials = new Credentials { Login = "user", Password = "Wrong" };
+        var result = await _authService.LoginAsync(credentials, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Неверный логин или пароль", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Неверный логин или пароль", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public async Task Login_NonExistingUser_ReturnsFailure()
     {
-        var creds = new Credentials { Login = "nobody", Password = "pass" };
-        var result = await _authService.LoginAsync(creds, CancellationToken.None);
+        var credentials = new Credentials { Login = "nobody", Password = "pass" };
+        var result = await _authService.LoginAsync(credentials, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Неверный логин или пароль", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Неверный логин или пароль", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -148,11 +154,13 @@ public class AuthServiceTests : TestBase
             CreatedAt = DateTime.UtcNow
         }, CancellationToken.None);
 
-        var creds = new Credentials { Login = "inactive", Password = "pass" };
-        var result = await _authService.LoginAsync(creds, CancellationToken.None);
+        var credentials = new Credentials { Login = "inactive", Password = "pass" };
+        var result = await _authService.LoginAsync(credentials, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не активен", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не активен", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== RefreshTokenAsync ====================
@@ -163,7 +171,7 @@ public class AuthServiceTests : TestBase
         var user = new User
         {
             Id = Guid.NewGuid(),
-            Login = "refreshuser",
+            Login = "refresh_user",
             DisplayName = "Refresh",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("pass"),
             IsActive = true,
@@ -184,10 +192,11 @@ public class AuthServiceTests : TestBase
         var result = await _authService.RefreshTokenAsync(oldRefresh, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.NotEqual(oldRefresh, result.Value.RefreshToken); // новый refresh-токен
-        Assert.False(string.IsNullOrEmpty(result.Value.AccessToken));
+        var tokens = result.Value;
+        Assert.NotNull(tokens);
+        Assert.NotEqual(oldRefresh, tokens.RefreshToken);
+        Assert.False(string.IsNullOrEmpty(tokens.AccessToken));
 
-        // Старый токен должен быть удалён
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
         var oldTokenExists = await db.RefreshTokens.AnyAsync(rt => rt.Token == oldRefresh);
@@ -200,7 +209,7 @@ public class AuthServiceTests : TestBase
         var user = new User
         {
             Id = Guid.NewGuid(),
-            Login = "expireduser",
+            Login = "expired_user",
             DisplayName = "Expired",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("pass"),
             IsActive = true,
@@ -213,14 +222,16 @@ public class AuthServiceTests : TestBase
             Id = Guid.NewGuid(),
             Token = "expired-token",
             UserId = user.Id,
-            ExpiresAt = DateTime.UtcNow.AddDays(-1), // истёк
+            ExpiresAt = DateTime.UtcNow.AddDays(-1),
             CreatedAt = DateTime.UtcNow
         }, CancellationToken.None);
 
         var result = await _authService.RefreshTokenAsync("expired-token", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Недействительный или истекший", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Недействительный или истекший", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -229,7 +240,9 @@ public class AuthServiceTests : TestBase
         var result = await _authService.RefreshTokenAsync("nonexistent", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Недействительный или истекший", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Недействительный или истекший", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== LogoutAsync ====================
@@ -240,7 +253,7 @@ public class AuthServiceTests : TestBase
         var user = new User
         {
             Id = Guid.NewGuid(),
-            Login = "logoutuser",
+            Login = "logout_user",
             DisplayName = "Logout",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("pass"),
             IsActive = true,
@@ -271,7 +284,6 @@ public class AuthServiceTests : TestBase
     [Fact]
     public async Task Logout_NonExistingToken_ReturnsSuccess()
     {
-        // Выход с несуществующим токеном не должен быть ошибкой
         var result = await _authService.LogoutAsync("fake-token", CancellationToken.None);
         Assert.True(result.IsSuccess);
     }

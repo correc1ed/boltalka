@@ -38,8 +38,10 @@ public class UserServiceTests : TestBase
         var result = await _userService.GetProfileAsync(userId, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal("login1", result.Value.Login);
-        Assert.Equal("Alice", result.Value.DisplayName);
+        var profile = result.Value;
+        Assert.NotNull(profile);
+        Assert.Equal("login1", profile.Login);
+        Assert.Equal("Alice", profile.DisplayName);
     }
 
     [Fact]
@@ -57,7 +59,9 @@ public class UserServiceTests : TestBase
         var userId = await CreateUserReturnId("login2", "Bob", ct: CancellationToken.None);
         var result = await _userService.GetUserByIdAsync(userId, CancellationToken.None);
         Assert.True(result.IsSuccess);
-        Assert.Equal(userId, result.Value.Id);
+        var user = result.Value;
+        Assert.NotNull(user);
+        Assert.Equal(userId, user.Id);
     }
 
     [Fact]
@@ -75,10 +79,15 @@ public class UserServiceTests : TestBase
         var userId = await CreateUserReturnId("login3", "OldName", ct: CancellationToken.None);
         var result = await _userService.UpdateDisplayNameAsync(userId, "NewName", CancellationToken.None);
         Assert.True(result.IsSuccess);
-        Assert.Equal("NewName", result.Value.DisplayName);
+        var updatedProfile = result.Value;
+        Assert.NotNull(updatedProfile);
+        Assert.Equal("NewName", updatedProfile.DisplayName);
 
         var profileResult = await _userService.GetProfileAsync(userId, CancellationToken.None);
-        Assert.Equal("NewName", profileResult.Value.DisplayName);
+        Assert.True(profileResult.IsSuccess);
+        var profile = profileResult.Value;
+        Assert.NotNull(profile);
+        Assert.Equal("NewName", profile.DisplayName);
     }
 
     [Fact]
@@ -107,8 +116,10 @@ public class UserServiceTests : TestBase
         var result = await _userService.SetAvatarAsync(userId, media.Id, CancellationToken.None);
         
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Value.AvatarUrl);
-        Assert.Equal(media.StoragePath, result.Value.AvatarUrl);
+        var profile = result.Value;
+        Assert.NotNull(profile);
+        Assert.NotNull(profile.AvatarUrl);
+        Assert.Equal(media.StoragePath, profile.AvatarUrl);
     }
 
     [Fact]
@@ -147,9 +158,12 @@ public class UserServiceTests : TestBase
 
         var result = await _userService.SearchUsersAsync("ali", 0, 10, CancellationToken.None);
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Count());
-        Assert.Contains(result.Value, u => u.Login == "alice");
-        Assert.Contains(result.Value, u => u.Login == "alicia");
+        var users = result.Value;
+        Assert.NotNull(users);
+        var usersList = users.ToList(); // материализуем
+        Assert.Equal(2, usersList.Count);
+        Assert.Contains(usersList, u => u.Login == "alice");
+        Assert.Contains(usersList, u => u.Login == "alicia");
     }
 
     [Fact]
@@ -158,7 +172,10 @@ public class UserServiceTests : TestBase
         await CreateUserReturnId("john", "John", ct: CancellationToken.None);
         var result = await _userService.SearchUsersAsync("xyz", 0, 10, CancellationToken.None);
         Assert.True(result.IsSuccess);
-        Assert.Empty(result.Value);
+        var users = result.Value;
+        Assert.NotNull(users);
+        var usersList = users.ToList();
+        Assert.Empty(usersList);
     }
 
     [Fact]
@@ -177,11 +194,21 @@ public class UserServiceTests : TestBase
         var page1 = await _userService.SearchUsersAsync("user", 0, 5, CancellationToken.None);
         var page2 = await _userService.SearchUsersAsync("user", 5, 5, CancellationToken.None);
 
-        Assert.Equal(5, page1.Value.Count());
-        Assert.Equal(5, page2.Value.Count());
+        Assert.True(page1.IsSuccess);
+        Assert.True(page2.IsSuccess);
+        var users1 = page1.Value;
+        var users2 = page2.Value;
+        Assert.NotNull(users1);
+        Assert.NotNull(users2);
 
-        var ids1 = page1.Value.Select(u => u.Id).ToHashSet();
-        var ids2 = page2.Value.Select(u => u.Id).ToHashSet();
+        var list1 = users1.ToList();
+        var list2 = users2.ToList();
+
+        Assert.Equal(5, list1.Count);
+        Assert.Equal(5, list2.Count);
+
+        var ids1 = list1.Select(u => u.Id).ToHashSet();
+        var ids2 = list2.Select(u => u.Id).ToHashSet();
         Assert.False(ids1.Overlaps(ids2));
     }
 
@@ -195,7 +222,10 @@ public class UserServiceTests : TestBase
         Assert.True(result.IsSuccess);
 
         var profile = await _userService.GetProfileAsync(userId, CancellationToken.None);
-        Assert.False(profile.Value.IsActive);
+        Assert.True(profile.IsSuccess);
+        var userProfile = profile.Value;
+        Assert.NotNull(userProfile);
+        Assert.False(userProfile.IsActive);
     }
 
     [Fact]
@@ -214,7 +244,10 @@ public class UserServiceTests : TestBase
         Assert.True(result.IsSuccess);
 
         var profile = await _userService.GetProfileAsync(userId, CancellationToken.None);
-        Assert.True(profile.Value.IsActive);
+        Assert.True(profile.IsSuccess);
+        var userProfile = profile.Value;
+        Assert.NotNull(userProfile);
+        Assert.True(userProfile.IsActive);
     }
 
     [Fact]
@@ -251,7 +284,7 @@ public class UserServiceTests : TestBase
             ContentType = contentType,
             SizeBytes = 12345,
             StoragePath = $"fake/path/{Guid.NewGuid()}",
-            UploadedByUserId = null,   // обязательно null, чтобы не нарушать FK
+            UploadedByUserId = null,
             CreatedAt = DateTime.UtcNow
         };
         await _mediaRepository.AddAsync(media, ct);
