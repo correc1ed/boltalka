@@ -96,7 +96,6 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow,
             UserId = user.Id
         };
-        await _userRepository.AddAsync(user, ct);
 
         return Result<AuthTokens>.Success(new AuthTokens
         {

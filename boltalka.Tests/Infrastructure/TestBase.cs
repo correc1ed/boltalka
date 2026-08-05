@@ -4,14 +4,6 @@ using boltalka.Application.Abstractions.Storage;
 using boltalka.Application.Tests.Fakes;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
-using boltalka.Infrastructure.Database.Mappers.Call;
-using boltalka.Infrastructure.Database.Mappers.Chat;
-using boltalka.Infrastructure.Database.Mappers.ChatMember;
-using boltalka.Infrastructure.Database.Mappers.Media;
-using boltalka.Infrastructure.Database.Mappers.Message;
-using boltalka.Infrastructure.Database.Mappers.MessageMedia;
-using boltalka.Infrastructure.Database.Mappers.RefreshToken;
-using boltalka.Infrastructure.Database.Mappers.User;
 using boltalka.Infrastructure.Database.Profiles;
 using boltalka.Infrastructure.Database.Repositories;
 using Microsoft.Data.Sqlite;
@@ -54,7 +46,6 @@ public abstract class TestBase : IDisposable
         services.AddSingleton<IConfiguration>(configuration);
 
         services.AddAutoMapper(cfg => { }, typeof(boltalka.Application.Abstractions.Mappers.MappingProfile).Assembly, typeof(EntityMappingProfile).Assembly);
-
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
