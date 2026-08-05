@@ -38,8 +38,6 @@ public static class InfrastructureRegister
         services.AddAutoMapper(cfg =>
         {
             cfg.AddMaps(
-                typeof(LightMapper).Assembly,
-                
                 typeof(CallFromEntitiesMapper).Assembly,
                 typeof(CallToEntitiesMapper).Assembly,
                 
