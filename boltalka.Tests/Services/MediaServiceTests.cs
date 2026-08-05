@@ -36,17 +36,19 @@ public class MediaServiceTests : TestBase
     {
         // Arrange
         var userId = await CreateUserAsync("uploader");
-        using var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5 });
+        using var stream = new MemoryStream([1, 2, 3, 4, 5]); // collection expression
 
         // Act
         var result = await _mediaService.UploadAsync(userId, stream, "test.png", "image/png", CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal("test.png", result.Value.FileName);
-        Assert.Equal("image/png", result.Value.ContentType);
-        Assert.Equal(5, result.Value.SizeBytes);
-        Assert.NotNull(result.Value.StoragePath);
+        var mediaDto = result.Value;
+        Assert.NotNull(mediaDto); // устранение Dereference of possibly null reference
+        Assert.Equal("test.png", mediaDto.FileName);
+        Assert.Equal("image/png", mediaDto.ContentType);
+        Assert.Equal(5, mediaDto.SizeBytes);
+        Assert.NotNull(mediaDto.StoragePath);
     }
 
     [Fact]
@@ -58,19 +60,23 @@ public class MediaServiceTests : TestBase
         var result = await _mediaService.UploadAsync(userId, stream, "empty.png", "image/png", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("пуст", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("пуст", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public async Task Upload_InvalidContentType_ReturnsFailure()
     {
         var userId = await CreateUserAsync("uploader");
-        using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+        using var stream = new MemoryStream([1, 2, 3]); // collection expression
 
-        var result = await _mediaService.UploadAsync(userId, stream, "bad.exe", "application/x-msdownload", CancellationToken.None);
+        var result = await _mediaService.UploadAsync(userId, stream, "bad.exe", "application/octet-stream", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Недопустимый тип", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Недопустимый тип", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -83,7 +89,9 @@ public class MediaServiceTests : TestBase
         var result = await _mediaService.UploadAsync(userId, stream, "big.png", "image/png", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("размер", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("размер", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== GetMediaAsync ====================
@@ -96,8 +104,10 @@ public class MediaServiceTests : TestBase
         var result = await _mediaService.GetMediaAsync(media.Id, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(media.Id, result.Value.Id);
-        Assert.Equal("file.pdf", result.Value.FileName);
+        var mediaDto = result.Value;
+        Assert.NotNull(mediaDto); // устранение Dereference
+        Assert.Equal(media.Id, mediaDto.Id);
+        Assert.Equal("file.pdf", mediaDto.FileName);
     }
 
     [Fact]
@@ -105,7 +115,9 @@ public class MediaServiceTests : TestBase
     {
         var result = await _mediaService.GetMediaAsync(Guid.NewGuid(), CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("не найден", result.Error);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не найден", error);
     }
 
     // ==================== GetFileStreamAsync ====================
@@ -118,8 +130,9 @@ public class MediaServiceTests : TestBase
         var result = await _mediaService.GetFileStreamAsync(media.Id, Guid.NewGuid(), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Value);
-        result.Value.Dispose();
+        var stream = result.Value;
+        Assert.NotNull(stream);
+        await stream.DisposeAsync(); // использование асинхронного Dispose, устранение предупреждения
     }
 
     [Fact]
@@ -153,7 +166,9 @@ public class MediaServiceTests : TestBase
 
         var result = await _mediaService.DeleteMediaAsync(media.Id, otherUserId, CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("прав", result.Error);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("прав", error);
     }
 
     [Fact]

@@ -1,4 +1,3 @@
-using System.Linq;
 using boltalka.Application.Abstractions.Repositories;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Enums.Call;
@@ -50,15 +49,17 @@ public class CallServiceTests : TestBase
         var result = await _callService.StartCallAsync(chatId, initiatorId, CallType.Audio, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(CallStatus.Pending, result.Value.Status);
-        Assert.Equal(CallType.Audio, result.Value.Type);
-        Assert.Equal(initiatorId, result.Value.InitiatorId);
-        Assert.Equal(chatId, result.Value.ChatId);
+        var callDto = result.Value;
+        Assert.NotNull(callDto);
+        Assert.Equal(CallStatus.Pending, callDto.Status);
+        Assert.Equal(CallType.Audio, callDto.Type);
+        Assert.Equal(initiatorId, callDto.InitiatorId);
+        Assert.Equal(chatId, callDto.ChatId);
 
         // Проверяем через БД
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
-        var call = await db.Calls.FirstOrDefaultAsync(c => c.Id == result.Value.Id);
+        var call = await db.Calls.FirstOrDefaultAsync(c => c.Id == callDto.Id);
         Assert.NotNull(call);
         Assert.Equal(CallStatus.Pending, (CallStatus)call.Status);
     }
@@ -72,14 +73,15 @@ public class CallServiceTests : TestBase
         var result = await _callService.StartCallAsync(chatId, outsider, CallType.Audio, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не являетесь участником", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не являетесь участником", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public async Task StartCall_ActiveCallExists_ReturnsFailure()
     {
         var (initiatorId, chatId) = await CreateChatWithUserAsync("caller", "receiver");
-        // Создаём активный звонок через репозиторий
         var activeCall = new Call
         {
             Id = Guid.NewGuid(),
@@ -93,7 +95,9 @@ public class CallServiceTests : TestBase
 
         var result = await _callService.StartCallAsync(chatId, initiatorId, CallType.Audio, CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("уже есть активный звонок", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("уже есть активный звонок", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -113,7 +117,9 @@ public class CallServiceTests : TestBase
 
         var result = await _callService.StartCallAsync(chatId, initiatorId, CallType.Audio, CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("уже есть активный звонок", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("уже есть активный звонок", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== AcceptCallAsync ====================
@@ -133,18 +139,20 @@ public class CallServiceTests : TestBase
         };
         await _callRepository.AddAsync(pendingCall, CancellationToken.None);
 
-        // Принимает другой участник (получатель)
         var receiverId = await GetOtherUserIdInChat(chatId, initiatorId);
 
         var result = await _callService.AcceptCallAsync(pendingCall.Id, receiverId, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(CallStatus.Active, result.Value.Status);
+        var acceptedCall = result.Value;
+        Assert.NotNull(acceptedCall);
+        Assert.Equal(CallStatus.Active, acceptedCall.Status);
 
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
         var call = await db.Calls.FindAsync(pendingCall.Id);
-        Assert.Equal(CallStatus.Active, (CallStatus)call!.Status);
+        Assert.NotNull(call);
+        Assert.Equal(CallStatus.Active, (CallStatus)call.Status);
     }
 
     [Fact]
@@ -166,7 +174,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.AcceptCallAsync(activeCall.Id, receiverId, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Нельзя принять звонок", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Нельзя принять звонок", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -188,7 +198,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.AcceptCallAsync(pendingCall.Id, outsider, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не являетесь участником", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не являетесь участником", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -196,7 +208,9 @@ public class CallServiceTests : TestBase
     {
         var result = await _callService.AcceptCallAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("не найден", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не найден", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== EndCallAsync ====================
@@ -219,13 +233,16 @@ public class CallServiceTests : TestBase
         var result = await _callService.EndCallAsync(activeCall.Id, initiatorId, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(CallStatus.Ended, result.Value.Status);
-        Assert.NotNull(result.Value.EndedAt);
+        var endedCallDto = result.Value;
+        Assert.NotNull(endedCallDto);
+        Assert.Equal(CallStatus.Ended, endedCallDto.Status);
+        Assert.NotNull(endedCallDto.EndedAt);
 
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
         var call = await db.Calls.FindAsync(activeCall.Id);
-        Assert.Equal(CallStatus.Ended, (CallStatus)call!.Status);
+        Assert.NotNull(call);
+        Assert.Equal(CallStatus.Ended, (CallStatus)call.Status);
         Assert.NotNull(call.EndedAt);
     }
 
@@ -247,7 +264,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.EndCallAsync(pendingCall.Id, initiatorId, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(CallStatus.Ended, result.Value.Status);
+        var endedCallDto = result.Value;
+        Assert.NotNull(endedCallDto);
+        Assert.Equal(CallStatus.Ended, endedCallDto.Status);
     }
 
     [Fact]
@@ -269,7 +288,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.EndCallAsync(activeCall.Id, outsider, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не являетесь участником", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не являетесь участником", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -291,7 +312,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.EndCallAsync(endedCall.Id, initiatorId, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("уже завершён", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("уже завершён", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== DeclineCallAsync ====================
@@ -319,7 +342,8 @@ public class CallServiceTests : TestBase
         using var scope = ServiceProvider.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
         var call = await db.Calls.FindAsync(pendingCall.Id);
-        Assert.Equal(CallStatus.Missed, (CallStatus)call!.Status);
+        Assert.NotNull(call);
+        Assert.Equal(CallStatus.Missed, (CallStatus)call.Status);
     }
 
     [Fact]
@@ -340,7 +364,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.DeclineCallAsync(pendingCall.Id, initiatorId, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Инициатор не может отклонить", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Инициатор не может отклонить", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -362,7 +388,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.DeclineCallAsync(activeCall.Id, receiverId, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("нельзя отклонить", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("нельзя отклонить", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== GetActiveCallAsync ====================
@@ -385,8 +413,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.GetActiveCallAsync(chatId, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Value);
-        Assert.Equal(activeCall.Id, result.Value.Id);
+        var callDto = result.Value;
+        Assert.NotNull(callDto);
+        Assert.Equal(activeCall.Id, callDto.Id);
     }
 
     [Fact]
@@ -431,10 +460,12 @@ public class CallServiceTests : TestBase
         var result = await _callService.GetCallHistoryAsync(chatId, initiatorId, 0, 10, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        var list = result.Value.ToList();
-        Assert.Equal(2, list.Count);
-        Assert.Contains(list, c => c.Id == call1.Id);
-        Assert.Contains(list, c => c.Id == call2.Id);
+        var calls = result.Value;
+        Assert.NotNull(calls);                    // устраняем Possible null reference argument
+        var callList = calls.ToList();
+        Assert.Equal(2, callList.Count);
+        Assert.Contains(callList, c => c.Id == call1.Id);
+        Assert.Contains(callList, c => c.Id == call2.Id);
     }
 
     [Fact]
@@ -446,7 +477,9 @@ public class CallServiceTests : TestBase
         var result = await _callService.GetCallHistoryAsync(chatId, outsider, 0, 10, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не являетесь участником", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не являетесь участником", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== Вспомогательные методы ====================

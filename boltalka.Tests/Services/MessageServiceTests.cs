@@ -53,10 +53,12 @@ public class MessageServiceTests : TestBase
         var result = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal("Hello!", result.Value.Text);
-        Assert.Equal(chatId, result.Value.ChatId);
-        Assert.Equal(senderId, result.Value.SenderId);
-        Assert.Equal(MessageStatus.Sent, result.Value.Status);
+        var message = result.Value;
+        Assert.NotNull(message);                     // устранение Dereference of possibly null reference
+        Assert.Equal("Hello!", message.Text);
+        Assert.Equal(chatId, message.ChatId);
+        Assert.Equal(senderId, message.SenderId);
+        Assert.Equal(MessageStatus.Sent, message.Status);
     }
 
     [Fact]
@@ -70,14 +72,18 @@ public class MessageServiceTests : TestBase
         {
             ChatId = chatId,
             Text = "Files",
-            MediaIds = new List<Guid> { media1.Id, media2.Id }
+            MediaIds = [media1.Id, media2.Id]
         };
         var result = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Attachments.Count());
-        Assert.Contains(result.Value.Attachments, a => a.Id == media1.Id);
-        Assert.Contains(result.Value.Attachments, a => a.Id == media2.Id);
+        var message = result.Value;
+        Assert.NotNull(message);                     // устранение Dereference of possibly null reference
+        Assert.NotNull(message.Attachments);
+        var attachments = message.Attachments.ToList(); // материализуем, чтобы избежать multiple enumeration
+        Assert.Equal(2, attachments.Count);
+        Assert.Contains(attachments, a => a.Id == media1.Id);
+        Assert.Contains(attachments, a => a.Id == media2.Id);
     }
 
     [Fact]
@@ -88,7 +94,9 @@ public class MessageServiceTests : TestBase
         var result = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не может быть пустым", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);                       // устранение возможного null для Error
+        Assert.Contains("не может быть пустым", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -101,7 +109,9 @@ public class MessageServiceTests : TestBase
         var result = await _messageService.SendMessageAsync(outsiderId, dto, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("не являетесь участником", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("не являетесь участником", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -112,12 +122,14 @@ public class MessageServiceTests : TestBase
         {
             ChatId = chatId,
             Text = "Missing",
-            MediaIds = new List<Guid> { Guid.NewGuid() }
+            MediaIds = [Guid.NewGuid()]
         };
         var result = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Медиа с ID", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("Медиа с ID", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== GetMessagesAsync ====================
@@ -136,12 +148,19 @@ public class MessageServiceTests : TestBase
         var page2 = await _messageService.GetMessagesAsync(chatId, senderId, skip: 3, take: 3, CancellationToken.None);
 
         Assert.True(page1.IsSuccess);
-        Assert.Equal(3, page1.Value.Count());
         Assert.True(page2.IsSuccess);
-        Assert.Equal(3, page2.Value.Count());
+        var list1 = page1.Value;
+        var list2 = page2.Value;
+        Assert.NotNull(list1);
+        Assert.NotNull(list2);
+        var messages1 = list1.ToList();    // материализуем
+        var messages2 = list2.ToList();
 
-        var ids1 = page1.Value.Select(m => m.Id).ToHashSet();
-        var ids2 = page2.Value.Select(m => m.Id).ToHashSet();
+        Assert.Equal(3, messages1.Count);  // теперь гарантированно не null
+        Assert.Equal(3, messages2.Count);
+
+        var ids1 = messages1.Select(m => m.Id).ToHashSet();
+        var ids2 = messages2.Select(m => m.Id).ToHashSet();
         Assert.False(ids1.Overlaps(ids2));
     }
 
@@ -163,12 +182,16 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, recipientId) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "Hi" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference of possibly null reference
 
-        var markResult = await _messageService.MarkAsReadAsync(sendResult.Value.Id, recipientId, CancellationToken.None);
+        var markResult = await _messageService.MarkAsReadAsync(sentMessage.Id, recipientId, CancellationToken.None);
         Assert.True(markResult.IsSuccess);
 
-        var updatedMsg = await _messageRepo.GetByIdAsync(sendResult.Value.Id, CancellationToken.None);
-        Assert.Equal(MessageStatus.Read, updatedMsg!.Status);
+        var updatedMsg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
+        Assert.NotNull(updatedMsg);                  // вместо ! – явная проверка
+        Assert.Equal(MessageStatus.Read, updatedMsg.Status);
     }
 
     [Fact]
@@ -177,10 +200,15 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, _) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "Hi" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference of possibly null reference
 
-        var result = await _messageService.MarkAsReadAsync(sendResult.Value.Id, senderId, CancellationToken.None);
+        var result = await _messageService.MarkAsReadAsync(sentMessage.Id, senderId, CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("своё сообщение", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("своё сообщение", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -199,41 +227,47 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, _) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "Old" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference
 
-        var editResult = await _messageService.EditMessageAsync(sendResult.Value.Id, senderId, "New", CancellationToken.None);
-
+        var editResult = await _messageService.EditMessageAsync(sentMessage.Id, senderId, "New", CancellationToken.None);
         Assert.True(editResult.IsSuccess);
-        Assert.Equal("New", editResult.Value.Text);
-        Assert.NotNull(editResult.Value.UpdatedAt);
+        var edited = editResult.Value;
+        Assert.NotNull(edited);                      // устранение Dereference
+        Assert.Equal("New", edited.Text);
+        Assert.NotNull(edited.UpdatedAt);
 
-        var msg = await _messageRepo.GetByIdAsync(sendResult.Value.Id, CancellationToken.None);
-        Assert.Equal("New", msg!.Text);
+        var msg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
+        Assert.NotNull(msg);                         // вместо !
+        Assert.Equal("New", msg.Text);
     }
 
     [Fact]
     public async Task EditMessage_After24Hours_ReturnsFailure()
     {
-        // Arrange
         var (senderId, chatId, _) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var sendDto = new SendMessage { ChatId = chatId, Text = "Old" };
         var sendResult = await _messageService.SendMessageAsync(senderId, sendDto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference
 
-        // Получаем тот же контекст, что и у сервисов
         using var scope = ServiceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ServiceDbContext>();
     
-        // Меняем CreatedAt на 25 часов назад
-        var message = await dbContext.Messages.FindAsync(sendResult.Value.Id);
-        message!.CreatedAt = DateTime.UtcNow.AddHours(-25);
+        var message = await dbContext.Messages.FindAsync(sentMessage.Id);
+        Assert.NotNull(message);                     // вместо !
+        message.CreatedAt = DateTime.UtcNow.AddHours(-25);
         await dbContext.SaveChangesAsync();
 
-        // Act: вызываем редактирование в том же scope (через сервис из scope)
         var scopedMessageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
-        var editResult = await scopedMessageService.EditMessageAsync(sendResult.Value.Id, senderId, "New", CancellationToken.None);
+        var editResult = await scopedMessageService.EditMessageAsync(sentMessage.Id, senderId, "New", CancellationToken.None);
 
-        // Assert
         Assert.False(editResult.IsSuccess);
-        Assert.Contains("истекло", editResult.Error, StringComparison.OrdinalIgnoreCase);
+        var error = editResult.Error;
+        Assert.NotNull(error);
+        Assert.Contains("истекло", error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -242,10 +276,15 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, recipientId) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "Secret" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference
 
-        var result = await _messageService.EditMessageAsync(sendResult.Value.Id, recipientId, "Hacked", CancellationToken.None);
+        var result = await _messageService.EditMessageAsync(sentMessage.Id, recipientId, "Hacked", CancellationToken.None);
         Assert.False(result.IsSuccess);
-        Assert.Contains("свои сообщения", result.Error, StringComparison.OrdinalIgnoreCase);
+        var error = result.Error;
+        Assert.NotNull(error);
+        Assert.Contains("свои сообщения", error, StringComparison.OrdinalIgnoreCase);
     }
 
     // ==================== DeleteMessageAsync ====================
@@ -256,11 +295,14 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, _) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "ToDelete" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference
 
-        var deleteResult = await _messageService.DeleteMessageAsync(sendResult.Value.Id, senderId, CancellationToken.None);
+        var deleteResult = await _messageService.DeleteMessageAsync(sentMessage.Id, senderId, CancellationToken.None);
         Assert.True(deleteResult.IsSuccess);
 
-        var msg = await _messageRepo.GetByIdAsync(sendResult.Value.Id, CancellationToken.None);
+        var msg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
         Assert.Null(msg);
     }
 
@@ -270,8 +312,11 @@ public class MessageServiceTests : TestBase
         var (senderId, chatId, recipientId) = await CreateChatWithTwoUsersAsync("sender", "receiver");
         var dto = new SendMessage { ChatId = chatId, Text = "Keep" };
         var sendResult = await _messageService.SendMessageAsync(senderId, dto, CancellationToken.None);
+        Assert.True(sendResult.IsSuccess);
+        var sentMessage = sendResult.Value;
+        Assert.NotNull(sentMessage);                 // устранение Dereference
 
-        var result = await _messageService.DeleteMessageAsync(sendResult.Value.Id, recipientId, CancellationToken.None);
+        var result = await _messageService.DeleteMessageAsync(sentMessage.Id, recipientId, CancellationToken.None);
         Assert.False(result.IsSuccess);
     }
 
@@ -303,11 +348,11 @@ public class MessageServiceTests : TestBase
             Name = null,
             Type = ChatType.Private,
             CreatedAt = DateTime.UtcNow,
-            Members = new List<ChatMember>
-            {
+            Members =
+            [
                 new ChatMember { UserId = senderId, ChatId = Guid.Empty, Role = MemberRole.Member, JoinedAt = DateTime.UtcNow },
                 new ChatMember { UserId = recipientId, ChatId = Guid.Empty, Role = MemberRole.Member, JoinedAt = DateTime.UtcNow }
-            }
+            ]
         };
         foreach (var m in chat.Members) m.ChatId = chat.Id;
         await _chatRepo.AddAsync(chat, CancellationToken.None);
