@@ -10,22 +10,22 @@ public class Call
     /// <summary>
     /// Уникальный идентификатор звонка.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Идентификатор чата, в котором совершён звонок.
     /// </summary>
-    public Guid ChatId { get; set; }
+    public Guid ChatId { get; init; }
 
     /// <summary>
     /// Идентификатор пользователя, инициировавшего звонок.
     /// </summary>
-    public Guid InitiatorId { get; set; }
+    public Guid InitiatorId { get; init; }
 
     /// <summary>
     /// Время начала звонка.
     /// </summary>
-    public DateTime StartedAt { get; set; }
+    public DateTime StartedAt { get; init; }
 
     /// <summary>
     /// Время завершения звонка (null, если ещё не завершён).
@@ -40,15 +40,15 @@ public class Call
     /// <summary>
     /// Тип звонка: аудио или видео.
     /// </summary>
-    public CallType Type { get; set; }
+    public CallType Type { get; init; }
 
     /// <summary>
     /// Навигационное свойство: чат, в котором звонок.
     /// </summary>
-    public Chat.Chat Chat { get; set; } = null!;
+    public Chat.Chat Chat { get; init; } = null!;
 
     /// <summary>
     /// Навигационное свойство: инициатор звонка.
     /// </summary>
-    public User.User Initiator { get; set; } = null!;
+    public User.User Initiator { get; init; } = null!;
 }

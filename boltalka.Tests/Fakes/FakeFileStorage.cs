@@ -1,6 +1,6 @@
 using boltalka.Application.Abstractions.Storage;
 
-namespace boltalka.Application.Tests.Fakes;
+namespace boltalka.Tests.Fakes;
 
 public class FakeFileStorage : IFileStorage
 {

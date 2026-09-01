@@ -8,7 +8,7 @@ using boltalka.Application.Models.ChatMember;
 using boltalka.Application.Models.Media;
 using boltalka.Application.Models.Message;
 using boltalka.Application.Models.User;
-using boltalka.Application.Tests.Infrastructure;
+using boltalka.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
 using boltalka.Infrastructure.Database.Repositories;
@@ -19,18 +19,18 @@ namespace boltalka.Tests.Services;
 public class MessageServiceTests : TestBase
 {
     private readonly IMessageService _messageService;
-    private readonly IMessageRepository _messageRepo;
-    private readonly IChatRepository _chatRepo;
-    private readonly IMediaRepository _mediaRepo;
-    private readonly IUserRepository _userRepo;
+    private readonly IMessageRepository _messageRepository;
+    private readonly IChatRepository _chatRepository;
+    private readonly IMediaRepository _mediaRepository;
+    private readonly IUserRepository _userRepository;
 
     public MessageServiceTests()
     {
         _messageService = ServiceProvider.GetRequiredService<IMessageService>();
-        _messageRepo = ServiceProvider.GetRequiredService<IMessageRepository>();
-        _chatRepo = ServiceProvider.GetRequiredService<IChatRepository>();
-        _mediaRepo = ServiceProvider.GetRequiredService<IMediaRepository>();
-        _userRepo = ServiceProvider.GetRequiredService<IUserRepository>();
+        _messageRepository = ServiceProvider.GetRequiredService<IMessageRepository>();
+        _chatRepository = ServiceProvider.GetRequiredService<IChatRepository>();
+        _mediaRepository = ServiceProvider.GetRequiredService<IMediaRepository>();
+        _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     }
 
     protected override void ConfigureServices(IServiceCollection services)
@@ -189,7 +189,7 @@ public class MessageServiceTests : TestBase
         var markResult = await _messageService.MarkAsReadAsync(sentMessage.Id, recipientId, CancellationToken.None);
         Assert.True(markResult.IsSuccess);
 
-        var updatedMsg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
+        var updatedMsg = await _messageRepository.GetByIdAsync(sentMessage.Id, CancellationToken.None);
         Assert.NotNull(updatedMsg);                  // вместо ! – явная проверка
         Assert.Equal(MessageStatus.Read, updatedMsg.Status);
     }
@@ -238,7 +238,7 @@ public class MessageServiceTests : TestBase
         Assert.Equal("New", edited.Text);
         Assert.NotNull(edited.UpdatedAt);
 
-        var msg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
+        var msg = await _messageRepository.GetByIdAsync(sentMessage.Id, CancellationToken.None);
         Assert.NotNull(msg);                         // вместо !
         Assert.Equal("New", msg.Text);
     }
@@ -302,7 +302,7 @@ public class MessageServiceTests : TestBase
         var deleteResult = await _messageService.DeleteMessageAsync(sentMessage.Id, senderId, CancellationToken.None);
         Assert.True(deleteResult.IsSuccess);
 
-        var msg = await _messageRepo.GetByIdAsync(sentMessage.Id, CancellationToken.None);
+        var msg = await _messageRepository.GetByIdAsync(sentMessage.Id, CancellationToken.None);
         Assert.Null(msg);
     }
 
@@ -333,7 +333,7 @@ public class MessageServiceTests : TestBase
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
-        await _userRepo.AddAsync(user, CancellationToken.None);
+        await _userRepository.AddAsync(user, CancellationToken.None);
         return user.Id;
     }
 
@@ -355,7 +355,7 @@ public class MessageServiceTests : TestBase
             ]
         };
         foreach (var m in chat.Members) m.ChatId = chat.Id;
-        await _chatRepo.AddAsync(chat, CancellationToken.None);
+        await _chatRepository.AddAsync(chat, CancellationToken.None);
         return (senderId, chat.Id, recipientId);
     }
 
@@ -371,7 +371,7 @@ public class MessageServiceTests : TestBase
             UploadedByUserId = null,
             CreatedAt = DateTime.UtcNow
         };
-        await _mediaRepo.AddAsync(media, CancellationToken.None);
+        await _mediaRepository.AddAsync(media, CancellationToken.None);
         return media;
     }
 }

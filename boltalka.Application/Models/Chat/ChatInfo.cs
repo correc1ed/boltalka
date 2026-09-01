@@ -11,30 +11,30 @@ public class ChatInfo
     /// <summary>
     /// Идентификатор чата.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     
     /// <summary>
     /// Название чата.
     /// </summary>
-    public string? Name { get; set; }
+    public string? Name { get; init; }
     
     /// <summary>
     /// Тип чата.
     /// </summary>
-    public ChatType Type { get; set; }
+    public ChatType Type { get; init; }
     
     /// <summary>
     /// Дата создания.
     /// </summary>
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; init; }
     
     /// <summary>
     /// Участники чата.
     /// </summary>
-    public ICollection<UserProfile> Members { get; set; } = new List<UserProfile>();
+    public ICollection<UserProfile> Members { get; init; } = new List<UserProfile>();
     
     /// <summary>
     /// Последнее сообщение.
     /// </summary>
-    public Message.Message? LastMessage { get; set; }
+    public Message.Message? LastMessage { get; init; }
 }

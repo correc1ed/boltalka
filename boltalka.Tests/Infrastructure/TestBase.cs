@@ -1,7 +1,7 @@
 using boltalka.Application.Abstractions.Repositories;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Abstractions.Storage;
-using boltalka.Application.Tests.Fakes;
+using boltalka.Tests.Fakes;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
 using boltalka.Infrastructure.Database.Profiles;
@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace boltalka.Application.Tests.Infrastructure;
+namespace boltalka.Tests.Infrastructure;
 
 public abstract class TestBase : IDisposable
 {
@@ -45,7 +45,7 @@ public abstract class TestBase : IDisposable
         
         services.AddSingleton<IConfiguration>(configuration);
 
-        services.AddAutoMapper(cfg => { }, typeof(boltalka.Application.Abstractions.Mappers.MappingProfile).Assembly, typeof(EntityMappingProfile).Assembly);
+        services.AddAutoMapper(cfg => { }, typeof(boltalka.Application.Abstractions.Mappers.MappingProfile).Assembly, typeof(boltalka.WebApi.Mappers.MappingProfile).Assembly, typeof(EntityMappingProfile).Assembly);
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();

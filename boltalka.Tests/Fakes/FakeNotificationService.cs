@@ -2,7 +2,7 @@ using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Models.Call;
 using boltalka.Application.Models.Message;
 
-namespace boltalka.Application.Tests.Fakes;
+namespace boltalka.Tests.Fakes;
 
 public class FakeNotificationService : INotificationService
 {

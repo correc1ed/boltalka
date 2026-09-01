@@ -7,12 +7,12 @@ public class MessageToMessageInfoMapper : MappingProfile
     public MessageToMessageInfoMapper()
     {
         CreateMap<Application.Models.Message.Message, Application.Models.Message.MessageInfo>(
-            (source, mapper) => new Application.Models.Message.MessageInfo
+            (source, _) => new Application.Models.Message.MessageInfo
             {
                 Id = source.Id,
                 ChatId = source.ChatId,
                 SenderId = source.SenderId,
-                SenderName = source.Sender?.DisplayName != null ? source.Sender.DisplayName : string.Empty,
+                SenderName = source.Sender?.DisplayName ?? string.Empty,
                 Text = source.Text,
                 Attachments = source.MessageMediaLinks.Select(messageMediaLink => messageMediaLink.Media),
                 Status = source.Status,

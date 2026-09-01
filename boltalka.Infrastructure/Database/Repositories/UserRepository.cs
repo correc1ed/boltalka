@@ -54,9 +54,11 @@ public class UserRepository : BaseRepository<UserEntity, User>, IUserRepository
 
     public async Task<IEnumerable<User>> SearchUsersAsync(string query, int skip, int take, CancellationToken cancellationToken = default)
     {
+        var lowerQuery = query.ToLowerInvariant();
+        
         var users = await _dbContext.Users
             .AsNoTracking()
-            .Where(u => u.Login.Contains(query) || u.DisplayName.Contains(query))
+            .Where(u => u.Login.ToLower().Contains(lowerQuery) || u.DisplayName.ToLower().Contains(lowerQuery))
             .OrderBy(u => u.CreatedAt)
             .Skip(skip)
             .Take(take)

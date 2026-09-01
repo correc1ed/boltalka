@@ -1,13 +1,12 @@
-using System.Reflection;
 using boltalka.Application;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Infrastructure;
 using boltalka.Infrastructure.Database;
 using boltalka.Infrastructure.Database.Storage;
+using boltalka.WebApi;
 using boltalka.WebApi.Hubs;
 using boltalka.WebApi.UseCases.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +38,8 @@ builder.Services
     .AddApplication()
     .AddInfrastructureApplication()
     .RegisterRepositories()
-    .RegisterMappersEntity();
+    .RegisterMappersEntity()
+    .RegisterMappersWebApiModels();
 
 // TODO : придумать какой нибудь другой способ интеграции сервиса уведомлений в SignalR.
 builder.Services.AddScoped<INotificationService, NotificationService>();

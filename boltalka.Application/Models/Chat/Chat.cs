@@ -10,17 +10,17 @@ public class Chat
     /// <summary>
     /// Идентификатор.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     
     /// <summary>
     /// Дата создания.
     /// </summary>
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; init; }
     
     /// <summary>
     /// Дата обновления.
     /// </summary>
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; init; }
     
     /// <summary>
     /// Название чата (для групповых; у личных может быть null или пустым).
@@ -30,7 +30,7 @@ public class Chat
     /// <summary>
     /// Тип чата: Private (1 на 1) или Group.
     /// </summary>
-    public ChatType Type { get; set; }
+    public ChatType Type { get; init; }
 
     /// <summary>
     /// Участники чата.
@@ -40,10 +40,10 @@ public class Chat
     /// <summary>
     /// Сообщения в чате.
     /// </summary>
-    public ICollection<Message.Message> Messages { get; set; } = new List<Message.Message>();
+    public ICollection<Message.Message> Messages { get; init; } = new List<Message.Message>();
 
     /// <summary>
     /// Звонки, совершённые в этом чате.
     /// </summary>
-    public ICollection<Call.Call> Calls { get; set; } = new List<Call.Call>();
+    public ICollection<Call.Call> Calls { get; init; } = new List<Call.Call>();
 }

@@ -10,12 +10,12 @@ public class Message
     /// <summary>
     /// Идентификатор.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     
     /// <summary>
     /// Дата создания.
     /// </summary>
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; init; }
     
     /// <summary>
     /// Дата обновления.
@@ -25,12 +25,12 @@ public class Message
     /// <summary>
     /// Идентификатор чата, в котором отправлено сообщение.
     /// </summary>
-    public Guid ChatId { get; set; }
+    public Guid ChatId { get; init; }
 
     /// <summary>
     /// Идентификатор отправителя.
     /// </summary>
-    public Guid SenderId { get; set; }
+    public Guid SenderId { get; init; }
 
     /// <summary>
     /// Текст сообщения (может быть null, если только вложение).
@@ -40,22 +40,22 @@ public class Message
     /// <summary>
     /// URL прикреплённого файла (изображение, документ).
     /// </summary>
-    public string? AttachmentUrl { get; set; }
+    public string? AttachmentUrl { get; init; }
 
     /// <summary>
     /// Статус доставки: Sent, Delivered, Read.
     /// </summary>
-    public MessageStatus Status { get; set; }
+    public MessageStatus Status { get; init; }
 
     /// <summary>
     /// Навигационное свойство: чат, к которому относится сообщение.
     /// </summary>
-    public Chat.Chat Chat { get; set; } = null!;
+    public Chat.Chat Chat { get; init; } = null!;
 
     /// <summary>
     /// Навигационное свойство: отправитель.
     /// </summary>
-    public User.User Sender { get; set; } = null!;
+    public User.User? Sender { get; init; }
     
     /// <summary>
     /// Список отправдляемых медиа в сообщении.

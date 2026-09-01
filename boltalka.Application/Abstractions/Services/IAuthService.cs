@@ -1,6 +1,5 @@
 using boltalka.Application.Models;
 using boltalka.Application.Models.Auth;
-using boltalka.Application.Models.User;
 
 namespace boltalka.Application.Abstractions.Services;
 

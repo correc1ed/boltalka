@@ -8,12 +8,12 @@ public class AuthTokens
     /// <summary>
     /// Токен доступа.
     /// </summary>
-    public string AccessToken { get; set; } = string.Empty;
+    public string AccessToken { get; init; } = string.Empty;
     
     /// <summary>
     /// Обновить токен.
     /// </summary>
-    public string RefreshToken { get; set; } = string.Empty;
+    public string RefreshToken { get; init; } = string.Empty;
     
     /// <summary>
     /// Истекает в.

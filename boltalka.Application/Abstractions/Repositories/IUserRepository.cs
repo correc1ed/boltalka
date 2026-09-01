@@ -43,7 +43,7 @@ public interface IUserRepository : IRepository<User>
     /// <param name="query">Имя пользователя.</param>
     /// <param name="skip">Пропуск элементов.</param>
     /// <param name="take">Выборка элементов.</param>
-    /// <param name="ct">Cancellation Token.</param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Список пользователей.</returns>
     Task<IEnumerable<User>> SearchUsersAsync(string query, int skip, int take, CancellationToken cancellationToken = default);
 }

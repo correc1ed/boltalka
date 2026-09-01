@@ -4,7 +4,7 @@ using boltalka.Application.Enums.Chat;
 using boltalka.Application.Enums.ChatMember;
 using boltalka.Application.Models.Message;
 using boltalka.Application.Models.User;
-using boltalka.Application.Tests.Infrastructure;
+using boltalka.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
 using boltalka.Infrastructure.Database.Repositories;
