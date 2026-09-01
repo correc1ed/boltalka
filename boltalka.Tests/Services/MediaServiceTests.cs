@@ -2,7 +2,7 @@ using boltalka.Application.Abstractions.Repositories;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Models.Media;
 using boltalka.Application.Models.User;
-using boltalka.Application.Tests.Infrastructure;
+using boltalka.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,14 +12,14 @@ namespace boltalka.Tests.Services;
 public class MediaServiceTests : TestBase
 {
     private readonly IMediaService _mediaService;
-    private readonly IMediaRepository _mediaRepo;
-    private readonly IUserRepository _userRepo;
+    private readonly IMediaRepository _mediaRepository;
+    private readonly IUserRepository _userRepository;
 
     public MediaServiceTests()
     {
         _mediaService = ServiceProvider.GetRequiredService<IMediaService>();
-        _mediaRepo = ServiceProvider.GetRequiredService<IMediaRepository>();
-        _userRepo = ServiceProvider.GetRequiredService<IUserRepository>();
+        _mediaRepository = ServiceProvider.GetRequiredService<IMediaRepository>();
+        _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     }
 
     protected override void ConfigureServices(IServiceCollection services)
@@ -191,7 +191,7 @@ public class MediaServiceTests : TestBase
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
-        await _userRepo.AddAsync(user, cancellationToken: CancellationToken.None);
+        await _userRepository.AddAsync(user, cancellationToken: CancellationToken.None);
         return user.Id;
     }
 
@@ -207,7 +207,7 @@ public class MediaServiceTests : TestBase
             UploadedByUserId = uploadedByUserId,
             CreatedAt = DateTime.UtcNow
         };
-        await _mediaRepo.AddAsync(media, cancellationToken: CancellationToken.None);
+        await _mediaRepository.AddAsync(media, cancellationToken: CancellationToken.None);
         return media;
     }
 }

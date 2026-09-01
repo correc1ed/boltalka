@@ -8,7 +8,7 @@ public class ChatToChatListItemMapper : MappingProfile
     public ChatToChatListItemMapper()
     {
         CreateMap<Application.Models.Chat.Chat, Application.Models.Chat.ChatListItem>(
-            (source, mapper) => new Application.Models.Chat.ChatListItem
+            (source, _) => new Application.Models.Chat.ChatListItem
             {
                 ChatId = source.Id,
                 ChatName = source.Name,

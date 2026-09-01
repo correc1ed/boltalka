@@ -23,10 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Mappers\" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\boltalka.Contracts\boltalka.Contracts.csproj" />
       <ProjectReference Include="..\boltalka.Infrastructure\boltalka.Infrastructure.csproj" />
     </ItemGroup>
 

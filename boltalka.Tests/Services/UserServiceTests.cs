@@ -2,7 +2,7 @@ using boltalka.Application.Abstractions.Repositories;
 using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Models.Media;
 using boltalka.Application.Models.User;
-using boltalka.Application.Tests.Infrastructure;
+using boltalka.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,13 +12,13 @@ namespace boltalka.Tests.Services;
 public class UserServiceTests : TestBase
 {
     private readonly IUserService _userService;
-    private readonly IUserRepository _userRepo;
+    private readonly IUserRepository _userRepository;
     private readonly IMediaRepository _mediaRepository;
 
     public UserServiceTests()
     {
         _userService = ServiceProvider.GetRequiredService<IUserService>();
-        _userRepo = ServiceProvider.GetRequiredService<IUserRepository>();
+        _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
         _mediaRepository = ServiceProvider.GetRequiredService<IMediaRepository>();
     }
 
@@ -271,7 +271,7 @@ public class UserServiceTests : TestBase
             IsActive = isActive,
             CreatedAt = DateTime.UtcNow
         };
-        await _userRepo.AddAsync(user, ct);
+        await _userRepository.AddAsync(user, ct);
         return user.Id;
     }
 

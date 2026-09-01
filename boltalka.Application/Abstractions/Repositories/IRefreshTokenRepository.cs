@@ -8,7 +8,7 @@ public interface IRefreshTokenRepository: IRepository<RefreshToken>
     /// Получить старый токен.
     /// </summary>
     /// <param name="token">Токен.</param>
-    /// <param name="сancellationToken">Cancellation Token./param>
+    /// <param name="cancellationToken">Cancellation Token.</param>
     /// <returns>Refresh токен.</returns>
-    Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken сancellationToken);
+    Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken);
 }

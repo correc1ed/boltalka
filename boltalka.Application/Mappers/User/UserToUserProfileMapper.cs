@@ -7,7 +7,7 @@ public class UserToUserProfileMapper : MappingProfile
     public UserToUserProfileMapper()
     {
         CreateMap<Application.Models.User.User, Application.Models.User.UserProfile>(
-        (source, mapper) => new Application.Models.User.UserProfile
+        (source, _) => new Application.Models.User.UserProfile
         {
             Id = source.Id,
             Login = source.Login,

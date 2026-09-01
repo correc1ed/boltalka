@@ -61,6 +61,7 @@ public class MessageRepository : BaseRepository<MessageEntity, Message>, IMessag
     public async Task<Message?> GetMessageWithMediaAsync(Guid messageId, CancellationToken cancellationToken)
     {
         var messageResult = await _dbContext.Messages
+            .AsNoTracking() 
             .Include(m => m.MessageMediaLinks)
             .ThenInclude(mm => mm.Media)
             .FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);

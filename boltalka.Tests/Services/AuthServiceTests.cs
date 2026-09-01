@@ -3,7 +3,7 @@ using boltalka.Application.Abstractions.Services;
 using boltalka.Application.Models.Auth;
 using boltalka.Application.Models.RefreshToken;
 using boltalka.Application.Models.User;
-using boltalka.Application.Tests.Infrastructure;
+using boltalka.Tests.Infrastructure;
 using boltalka.Application.UseCases.Services;
 using boltalka.Infrastructure.Database;
 using boltalka.Infrastructure.Database.Repositories;

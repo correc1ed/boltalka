@@ -6,8 +6,8 @@ public class RegisterToUserMapper : MappingProfile
 {
     public RegisterToUserMapper()
     {
-        CreateMap<Application.Models.Auth.Register, Application.Models.User.User>(
-            (source, mapper) => new Application.Models.User.User
+        CreateMap<Models.Auth.Register, Application.Models.User.User>(
+            (source, _) => new Application.Models.User.User
             {
                 Id = Guid.NewGuid(),
                 Login = source.Login,

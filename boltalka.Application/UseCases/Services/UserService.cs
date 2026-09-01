@@ -75,9 +75,9 @@ public class UserService : IUserService
             return Result<IEnumerable<UserProfile>>.Failure("Запрос не может быть пустым.");
 
         var users = await _userRepository.SearchUsersAsync(query, skip, take, cancellationToken);
-        var dtos = _mapper.Map<IEnumerable<UserProfile>>(users);
+        var profiles = _mapper.Map<IEnumerable<UserProfile>>(users);
         
-        return Result<IEnumerable<UserProfile>>.Success(dtos);
+        return Result<IEnumerable<UserProfile>>.Success(profiles);
     }
 
     public async Task<Result<UserProfile>> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken)

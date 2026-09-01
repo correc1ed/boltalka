@@ -14,5 +14,11 @@
     &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:Services/f:ChatServiceTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:Services/f:CallServiceTests.cs&lt;/ProjectFile&gt;&#xD;
     &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:Services/f:AuthServiceTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:AuthControllerTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:CallsControllerTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:ChatsControllerTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:MediaControllerTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:MessagesControllerTests.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;B570297F-11A4-4980-8D75-C708CC6ED791/d:WebApi/f:UsersControllerTests.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
